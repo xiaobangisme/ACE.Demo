@@ -1,0 +1,234 @@
+﻿@model Ace.Demo.ViewModel.RoleModel
+@{
+    ViewBag.Title = "新增/修改角色";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <link rel="stylesheet" href="~/Content/assets/css/jquery-ui-1.10.3.custom.min.css" />
+    <link rel="stylesheet" href="~/Content/assets/css/chosen.css" />
+    <link rel="stylesheet" href="~/Content/assets/css/datepicker.css" />
+    <link rel="stylesheet" href="~/Content/assets/css/bootstrap-timepicker.css" />
+    <link rel="stylesheet" href="~/Content/assets/css/daterangepicker.css" />
+    <link rel="stylesheet" href="~/Content/assets/css/colorpicker.css" />
+}
+
+@section scripts{
+    <script src="~/Content/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/Content/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/Content/assets/js/chosen.jquery.min.js"></script>
+    <script src="~/Content/assets/js/fuelux/fuelux.spinner.min.js"></script>
+    <script src="~/Content/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/Content/assets/js/date-time/bootstrap-timepicker.min.js"></script>
+    <script src="~/Content/assets/js/date-time/moment.min.js"></script>
+    <script src="~/Content/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/Content/assets/js/bootstrap-colorpicker.min.js"></script>
+    <script src="~/Content/assets/js/jquery.knob.min.js"></script>
+    <script src="~/Content/assets/js/jquery.autosize.min.js"></script>
+    <script src="~/Content/assets/js/jquery.inputlimiter.1.3.1.min.js"></script>
+    <script src="~/Content/assets/js/jquery.maskedinput.min.js"></script>
+    <script src="~/Content/assets/js/bootstrap-tag.min.js"></script>
+
+
+    <script src="~/Content/assets/js/fuelux/fuelux.wizard.min.js"></script>
+    <script src="~/Content/assets/js/jquery.validate.min.js"></script>
+    <script src="~/Content/assets/js/additional-methods.min.js"></script>
+    <script src="~/Content/assets/js/bootbox.min.js"></script>
+}
+
+@section inlineScripts{
+    <script>
+        $(function () {
+            $('#mainform').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                rules: {
+                    RoleName: {
+                        required: true,
+                        maxlength: 20
+                    },
+                    Description: {
+                        maxlength: 100
+                    }
+                },
+                messages: {
+                    RoleName: {
+                        required: "角色名称不能为空！",
+                        maxlength: "最多不能超过20个字符！"
+                    },
+                    Description: {
+                        maxlength: "最多不能超过100个字符！"
+                    }
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    alert("错误");
+                    $('.alert-danger', $('.login-form')).show();
+                },
+
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error').addClass('has-info');
+                    $(e).remove();
+                },
+
+                errorPlacement: function (error, element) {
+                    if (element.is(':checkbox') || element.is(':radio')) {
+                        var controls = element.closest('div[class*="col-"]');
+                        if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                        else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                    }
+                    else if (element.is('.select2')) {
+                        error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                    }
+                    else if (element.is('.chosen-select')) {
+                        error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                    }
+                    else error.insertAfter(element.parent());
+                },
+
+                submitHandler: function (form) { 
+                    $.ajax({
+                        type: "post",
+                        url: "/Role/Create",
+                        data: {
+                            RoleName: $("#RoleName").val(),
+                            Description: $("#Description").val()
+                        },
+                        success: function (result) {
+                            if (result.status==1) {
+                                alert("添加成功！");
+                                window.location.href = "/Role/Index";
+                            }
+                            else {
+                                alert("添加失败！");
+                            }
+                        }
+                    });
+                    return false;
+                }
+            });
+
+        });
+
+    </script>
+
+}
+
+@*导航菜单*@
+<div class="breadcrumbs" id="breadcrumbs">
+
+    <ul class="breadcrumb">
+        <li>
+            <i class="icon-home home-icon"></i>
+            <a href="#">首页</a>
+        </li>
+        <li>
+            <a href="#">角色管理</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ul><!-- .breadcrumb -->
+
+    <div class="nav-search" id="nav-search">
+        <form class="form-search">
+            <span class="input-icon">
+                <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                <i class="icon-search nav-search-icon"></i>
+            </span>
+        </form>
+    </div><!-- #nav-search -->
+</div>
+
+@*内容*@
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            角色管理
+            <small>
+                <i class="icon-double-angle-right"></i>
+                维护角色信息
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+
+            <div class="col-xs-12 col-sm-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h4>填写表单</h4>
+
+                        <span class="widget-toolbar">
+                            <a href="#" data-action="settings">
+                                <i class="icon-cog"></i>
+                            </a>
+
+                            <a href="#" data-action="reload">
+                                <i class="icon-refresh"></i>
+                            </a>
+
+                            <a href="#" data-action="collapse">
+                                <i class="icon-chevron-up"></i>
+                            </a>
+
+                            <a href="#" data-action="close">
+                                <i class="icon-remove"></i>
+                            </a>
+                        </span>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-body-inner" style="display: block;">
+                            <div class="widget-main">
+                                @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", id = "mainform", role = "form" }))
+                                {
+
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2"> 角色名称： </label>
+                                        <div class="col-sm-9">
+                                            <div class="clearfix">
+                                                <input type="text" id="RoleName" name="RoleName" placeholder="输入角色名" class="col-xs-12 col-sm-12" value="@Model.RoleName">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-4"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2"> 简介：</label>
+
+                                        <div class="col-sm-9">
+                                            <div class="clearfix">
+                                                <textarea id="Description" name="Description" placeholder="描述角色信息" class="col-xs-12 col-sm-12">@Model.Description</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix form-actions">
+                                        <div class="col-md-offset-3 col-md-9">
+                                            <button class="btn btn-info" type="submit">
+                                                <i class="icon-ok bigger-110"></i>
+                                                保存
+                                            </button>
+
+                                            &nbsp; &nbsp; &nbsp;
+                                            <button class="btn" type="reset">
+                                                <i class="icon-undo bigger-110"></i>
+                                                重置
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div>
